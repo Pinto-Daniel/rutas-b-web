@@ -1,0 +1,19 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import RouteCard from '../../components/RouteCard.astro';
+import { publishedRoutes } from '../../data/routes';
+---
+<BaseLayout title="Rutas" description="Explora las rutas culturales de Rutas B de Barcelona.">
+  <header class="page-hero compact"><div><p class="kicker">Catálogo inicial</p><h1>Encuentra tu ruta</h1><p>Tres formas distintas de leer Barcelona. Los datos pendientes están señalados con transparencia.</p></div></header>
+  <section class="section">
+    <div class="filter-bar" aria-label="Filtros de rutas"><button class="filter active" data-filter="all">Todas</button><button class="filter" data-filter="available">Disponibles</button><button class="filter" data-filter="in-development">En preparación</button></div>
+    <div class="route-grid" data-route-grid>{publishedRoutes.map((route) => <div data-status={route.status}><RouteCard route={route} /></div>)}</div>
+  </section>
+  <script is:inline>
+    document.querySelectorAll('[data-filter]').forEach((button) => button.addEventListener('click', () => {
+      document.querySelectorAll('[data-filter]').forEach((item) => item.classList.remove('active'));
+      button.classList.add('active');
+      document.querySelectorAll('[data-status]').forEach((card) => card.toggleAttribute('hidden', button.dataset.filter !== 'all' && card.dataset.status !== button.dataset.filter));
+    }));
+  </script>
+</BaseLayout>

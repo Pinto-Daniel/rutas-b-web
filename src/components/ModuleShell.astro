@@ -1,0 +1,5 @@
+---
+interface Props { enabled?: boolean; }
+const { enabled = true } = Astro.props;
+---
+{enabled && <slot />}

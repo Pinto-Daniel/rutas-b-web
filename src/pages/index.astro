@@ -1,0 +1,71 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import RouteCard from '../components/RouteCard.astro';
+import ModuleShell from '../components/ModuleShell.astro';
+import { publishedRoutes } from '../data/routes';
+import { moduleEnabled } from '../config/site';
+const base = import.meta.env.BASE_URL;
+---
+<BaseLayout description="Rutas culturales en Barcelona para viajeros, grupos y partners que buscan comprender la ciudad con una mirada propia.">
+  <section class="hero">
+    <div class="hero-backdrop"></div>
+    <div class="hero-inner">
+      <div class="hero-copy">
+        <p class="kicker">Rutas culturales en Barcelona</p>
+        <h1>Barcelona no solo se visita.<br /><em>Se aprende a mirar.</em></h1>
+        <p class="hero-lead">Recorridos con contexto, conversación y una mirada propia para entender lo que la ciudad todavía tiene delante de los ojos.</p>
+        <div class="hero-actions">
+          <a class="button primary" href={`${base}rutas/`}>Explorar las rutas</a>
+          <a class="button ghost" href={`${base}sobre/`}>Conoce al guía</a>
+        </div>
+        <ul class="trust-row" aria-label="Características principales">
+          <li>Grupos pequeños</li><li>Español e inglés</li><li>Solicitud sin pago</li>
+        </ul>
+      </div>
+      <aside class="hero-note">
+        <span class="note-index">01</span>
+        <p>Historias conectadas con el lugar, no discursos repetidos frente a una postal.</p>
+      </aside>
+    </div>
+  </section>
+
+  <ModuleShell enabled={moduleEnabled('routes')}>
+    <section class="section routes-preview">
+      <div class="section-heading split-heading">
+        <div><p class="kicker dark">Elige tu manera de entrar</p><h2>Tres rutas, tres Barcelonas</h2></div>
+        <p>Cada experiencia tiene un ritmo y una pregunta distinta. Compáralas y encuentra la que conversa mejor contigo.</p>
+      </div>
+      <div class="route-grid">{publishedRoutes.map((route) => <RouteCard route={route} />)}</div>
+      <div class="center-action"><a class="button outline" href={`${base}comparar/`}>Comparar las tres rutas</a></div>
+    </section>
+  </ModuleShell>
+
+  <section class="manifesto">
+    <div class="manifesto-inner">
+      <p class="kicker">La diferencia Rutas B</p>
+      <blockquote>“No se trata de explicarlo todo. Se trata de darte una brújula para que la ciudad empiece a hablar.”</blockquote>
+      <div class="principles">
+        <div><span>01</span><h3>Mirar primero</h3><p>Partimos de lo que tienes delante. La historia ayuda a ver; no tapa el lugar.</p></div>
+        <div><span>02</span><h3>Contexto sin pesadez</h3><p>Ideas claras, preguntas y comparaciones que ordenan una ciudad compleja.</p></div>
+        <div><span>03</span><h3>Una experiencia humana</h3><p>Ritmo atento, espacio para conversar y adaptación al grupo real.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section partner-section">
+    <div class="partner-card">
+      <div><p class="kicker dark">Hoteles, agencias y grupos</p><h2>Una ruta también puede adaptarse a tu público.</h2><p>Diseñamos versiones por duración, idioma, perfil del grupo y contexto de la visita, sin perder la columna vertebral de cada experiencia.</p></div>
+      <a class="button primary" href={`${base}contacto/?tipo=partner`}>Hablar de una colaboración</a>
+    </div>
+  </section>
+
+  <script is:inline define:vars={{ base }}>
+    const selected = new Set();
+    document.querySelectorAll('[data-compare-check]').forEach((check) => {
+      check.addEventListener('change', () => {
+        check.checked ? selected.add(check.value) : selected.delete(check.value);
+        if (selected.size >= 2) window.location.href = `${base}comparar/?rutas=${[...selected].join(',')}`;
+      });
+    });
+  </script>
+</BaseLayout>

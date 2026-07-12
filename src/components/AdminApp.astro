@@ -1,0 +1,45 @@
+---
+import { supabaseConfigured } from '../lib/supabase';
+---
+<section class="admin-shell" data-admin-app data-configured={String(supabaseConfigured)}>
+  <aside class="admin-sidebar" hidden data-admin-sidebar>
+    <div class="admin-brand"><span>B</span><strong>Rutas B</strong></div>
+    <nav aria-label="Administración">
+      <button class="active" data-admin-view="summary">Resumen</button>
+      <button data-admin-view="routes">Rutas</button>
+      <button data-admin-view="availability">Disponibilidad</button>
+      <button data-admin-view="bookings">Reservas</button>
+      <button data-admin-view="messages">Mensajes</button>
+      <button data-admin-view="reviews">Reseñas</button>
+    </nav>
+    <button class="admin-signout" data-signout>Cerrar sesión</button>
+  </aside>
+
+  <div class="admin-login section" data-login-view>
+    <div class="admin-card">
+      <div class="admin-lock" aria-hidden="true">B</div>
+      <p class="kicker dark">Zona privada</p><h1>Administración de Rutas B</h1>
+      {!supabaseConfigured && <div class="admin-notice"><strong>Modo de preparación</strong><p>Agrega las variables de Supabase para activar el acceso. Ninguna contraseña queda en el código.</p></div>}
+      <form data-login-form>
+        <label class="field"><span>Correo de administración</span><input name="email" type="email" autocomplete="username" required disabled={!supabaseConfigured} /></label>
+        <label class="field"><span>Contraseña</span><input name="password" type="password" autocomplete="current-password" required disabled={!supabaseConfigured} /></label>
+        <p class="admin-error" data-admin-error role="alert"></p>
+        <button class="button primary" type="submit" disabled={!supabaseConfigured}>Entrar</button>
+      </form>
+      <div class="admin-modules"><strong>Módulos independientes</strong><span>Resumen</span><span>Rutas</span><span>Disponibilidad</span><span>Reservas</span><span>Mensajes</span><span>Reseñas</span></div>
+    </div>
+  </div>
+
+  <main class="admin-main" hidden data-dashboard>
+    <header class="admin-topbar"><div><p>Administración</p><h1>Resumen operativo</h1></div><span data-admin-name></span></header>
+    <div class="admin-content">
+      <section class="admin-view" data-view="summary">
+        <div class="metric-grid"><article><span>Nuevas</span><strong data-metric="received">0</strong></article><article><span>En revisión</span><strong data-metric="reviewing">0</strong></article><article><span>Confirmadas</span><strong data-metric="confirmed">0</strong></article><article><span>Total visible</span><strong data-metric="total">0</strong></article></div>
+        <div class="admin-panel"><div class="admin-panel-head"><div><p class="kicker dark">Actividad reciente</p><h2>Solicitudes</h2></div><button class="button outline" data-refresh>Actualizar</button></div><div class="admin-table-wrap"><table class="admin-table"><thead><tr><th>Referencia</th><th>Cliente</th><th>Ruta</th><th>Fecha</th><th>Personas</th><th>Estado</th></tr></thead><tbody data-bookings-body></tbody></table></div><p class="admin-empty" data-admin-empty hidden>No hay solicitudes registradas.</p></div>
+      </section>
+      {['routes','availability','bookings','messages','reviews'].map((view) => <section class="admin-view" data-view={view} hidden><div class="admin-panel placeholder-panel"><p class="kicker dark">Módulo desacoplado</p><h2>{view === 'routes' ? 'Gestión de rutas' : view === 'availability' ? 'Disponibilidad' : view === 'bookings' ? 'Reservas' : view === 'messages' ? 'Mensajes' : 'Reseñas'}</h2><p>La estructura está lista para incorporarse sin afectar las demás áreas. Su edición detallada se activa en la siguiente iteración.</p></div></section>)}
+    </div>
+  </main>
+</section>
+
+<script src="../scripts/admin-app.ts"></script>

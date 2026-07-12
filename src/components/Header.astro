@@ -1,0 +1,23 @@
+---
+import { moduleEnabled } from '../config/site';
+const base = import.meta.env.BASE_URL;
+---
+<header class="site-header">
+  <div class="header-inner">
+    <a class="brand" href={base} aria-label="Rutas B, inicio">
+      <span class="brand-mark" aria-hidden="true"><span>B</span></span>
+      <span class="brand-copy"><strong>Rutas B</strong><small>de Barcelona</small></span>
+    </a>
+    <button class="menu-button" type="button" aria-expanded="false" aria-controls="main-nav" data-menu-button>
+      <span>Menú</span><span aria-hidden="true">☰</span>
+    </button>
+    <nav id="main-nav" class="main-nav" aria-label="Navegación principal" data-menu>
+      {moduleEnabled('routes') && <a href={`${base}rutas/`}>Rutas</a>}
+      {moduleEnabled('compare') && <a href={`${base}comparar/`}>Comparar</a>}
+      {moduleEnabled('guide') && <a href={`${base}sobre/`}>Quién guía</a>}
+      {moduleEnabled('faq') && <a href={`${base}preguntas/`}>Preguntas</a>}
+      {moduleEnabled('contact') && <a href={`${base}contacto/`}>Contacto</a>}
+      {moduleEnabled('booking') && <a class="nav-cta" href={`${base}reservar/`}>Solicitar ruta</a>}
+    </nav>
+  </div>
+</header>

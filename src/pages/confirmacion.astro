@@ -1,0 +1,11 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+const base = import.meta.env.BASE_URL;
+---
+<BaseLayout title="Solicitud preparada" noindex>
+  <section class="confirmation section"><div class="confirmation-card"><span class="confirmation-icon">✓</span><p class="kicker dark" data-confirmation-mode>Solicitud recibida</p><h1>Ya tenemos los datos</h1><p data-confirmation-copy>Revisaremos la disponibilidad y responderemos antes de que la reserva sea definitiva.</p><div class="confirmation-data" data-confirmation-data></div><a class="button primary" href={base}>Volver al inicio</a></div></section>
+  <script is:inline>
+    const target = document.querySelector('[data-confirmation-data]'); const raw = sessionStorage.getItem('rutasb-last-request');
+    if (target && raw) { const data = JSON.parse(raw); const titles={'sagrada-familia':'Sagrada Família','barcino':'Barcino','cafeborn':'CafèBorn'}; const routeTitle=data.routeTitle||titles[data.route]||data.route; target.innerHTML = `<strong>Referencia ${data.reference}</strong><span>${data.name}</span><span>Ruta: ${routeTitle}</span><span>Fecha preferida: ${data.date}</span>`; if(data.mode==='demo'){document.querySelector('[data-confirmation-mode]').textContent='Modo demostración'; document.querySelector('[data-confirmation-copy]').textContent='El formulario funciona, pero esta solicitud no fue enviada porque Supabase todavía no está conectado.';} }
+  </script>
+</BaseLayout>

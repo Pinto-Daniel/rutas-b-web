@@ -1,0 +1,25 @@
+---
+import { siteConfig } from '../config/site';
+const base = import.meta.env.BASE_URL;
+---
+<footer class="site-footer">
+  <div class="footer-grid">
+    <div>
+      <div class="footer-brand">{siteConfig.formalName}</div>
+      <p>Rutas culturales para entender Barcelona con contexto, cercanía y una mirada propia.</p>
+    </div>
+    <div>
+      <h2>Explorar</h2>
+      <a href={`${base}rutas/`}>Todas las rutas</a>
+      <a href={`${base}comparar/`}>Comparar rutas</a>
+      <a href={`${base}reservar/`}>Solicitar una ruta</a>
+    </div>
+    <div>
+      <h2>Información</h2>
+      <a href={`${base}privacidad/`}>Privacidad</a>
+      <a href={`${base}condiciones/`}>Condiciones</a>
+      <a href={`${base}admin/`}>Acceso privado</a>
+    </div>
+  </div>
+  <div class="footer-bottom"><span>© {new Date().getFullYear()} {siteConfig.shortName}</span><span>Barcelona, Catalunya</span></div>
+</footer>

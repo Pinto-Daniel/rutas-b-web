@@ -1,0 +1,15 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+const faqs = [
+  ['¿Enviar una solicitud confirma la reserva?', 'No. En esta primera etapa, la solicitud queda pendiente de revisión. Recibirás una respuesta con disponibilidad y condiciones antes de confirmar.'],
+  ['¿Debo pagar al enviar el formulario?', 'No. La primera versión no procesa pagos ni solicita datos bancarios.'],
+  ['¿En qué idiomas se ofrecen las rutas?', 'Las rutas se ofrecen inicialmente en español e inglés. El guía comprende catalán y portugués, pero todavía no se anuncian como idiomas completos de guiado.'],
+  ['¿Puedo solicitar una ruta privada?', 'Sí. El formulario permite indicar que se trata de un grupo privado, hotel, agencia o partner. El precio se informará después de revisar la solicitud.'],
+  ['¿La ruta de Sagrada Familia incluye entrada?', 'No. Es una ruta exterior alrededor de la basílica. Las entradas no están incluidas.'],
+  ['¿Las rutas son accesibles?', 'Cada ficha indica el estado de la auditoría de accesibilidad. Antes de confirmar, revisaremos contigo cualquier necesidad concreta.']
+];
+---
+<BaseLayout title="Preguntas frecuentes">
+  <header class="page-hero compact"><div><p class="kicker">Antes de solicitar</p><h1>Preguntas frecuentes</h1><p>Respuestas claras sobre el funcionamiento inicial de Rutas B.</p></div></header>
+  <section class="section faq-list">{faqs.map(([q,a]) => <details><summary>{q}<span aria-hidden="true">+</span></summary><p>{a}</p></details>)}</section>
+</BaseLayout>

@@ -1,0 +1,8 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+<BaseLayout title="Contacto">
+  <header class="page-hero compact"><div><p class="kicker">Conversemos</p><h1>Contacto</h1><p>Para consultas generales, grupos, hoteles, agencias y colaboraciones.</p></div></header>
+  <section class="section form-section"><form class="booking-form compact-form" data-contact-form><div class="form-grid"><label class="field"><span>Nombre</span><input name="name" required /></label><label class="field"><span>Correo electrónico</span><input name="email" type="email" required /></label><label class="field full"><span>Tipo de consulta</span><select name="type"><option>Consulta general</option><option>Hotel, agencia o partner</option><option>Grupo privado</option><option>Prensa o colaboración</option></select></label><label class="field full"><span>Mensaje</span><textarea name="message" rows="6" required></textarea></label></div><div class="form-summary"><strong>Formulario de maqueta</strong><p>El envío real se activará al conectar la base de datos.</p></div><button class="button primary" type="submit">Preparar mensaje</button></form></section>
+  <script is:inline>document.querySelector('[data-contact-form]')?.addEventListener('submit', (event) => { event.preventDefault(); alert('El formulario está validado, pero su envío se activará al conectar Supabase.'); });</script>
+</BaseLayout>

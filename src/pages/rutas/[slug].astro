@@ -1,0 +1,38 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { publishedRoutes, type TourRoute } from '../../data/routes';
+export function getStaticPaths() { return publishedRoutes.map((route) => ({ params: { slug: route.slug }, props: { route } })); }
+interface Props { route: TourRoute; }
+const { route } = Astro.props;
+const base = import.meta.env.BASE_URL;
+const image = `${base}${route.image.replace(/^\//, '')}`;
+const pending = route.status !== 'available';
+---
+<BaseLayout title={route.title} description={route.promise}>
+  <article class="route-detail">
+    <header class="route-hero">
+      <img src={image} alt={route.imageAlt} />
+      <div class="route-hero-overlay"></div>
+      <div class="route-hero-copy">
+        <p class="kicker">{route.eyebrow}</p><h1>{route.title}</h1><p>{route.promise}</p>
+        <span class:list={['status-pill', route.status]}>{route.statusLabel}</span>
+      </div>
+    </header>
+    <div class="route-booking-bar">
+      <div><span>Duración</span><strong>{route.duration}</strong></div><div><span>Idiomas ofrecidos</span><strong>{route.languages.join(' · ')}</strong></div><div><span>Precio</span><strong>{route.priceIndividual}</strong></div>
+      <a class="button primary" href={`${base}reservar/?ruta=${route.slug}`}>{pending ? 'Consultar esta ruta' : 'Solicitar esta ruta'}</a>
+    </div>
+    <div class="detail-layout section">
+      <div class="detail-main">
+        <section><p class="kicker dark">La experiencia</p><h2>Una ruta con una pregunta propia</h2><p class="large-copy">{route.description}</p></section>
+        <section><h2>El recorrido</h2><ol class="stop-list">{route.stops.map((stop, index) => <li><span>{String(index + 1).padStart(2, '0')}</span><strong>{stop}</strong></li>)}</ol></section>
+        <section class="two-columns"><div><h2>Qué incluye</h2><ul class="check-list">{route.includes.map((item) => <li>{item}</li>)}</ul></div><div><h2>Qué no incluye</h2><ul class="plain-list">{route.notIncluded.map((item) => <li>{item}</li>)}</ul></div></section>
+        <section><h2>Accesibilidad</h2><p>{route.accessibility}</p></section>
+      </div>
+      <aside class="detail-sidebar">
+        <div class="info-card"><h2>Información práctica</h2><dl><div><dt>Zona</dt><dd>{route.area}</dd></div><div><dt>Formato</dt><dd>{route.format}</dd></div><div><dt>Inicio</dt><dd>{route.startingPoint}</dd></div><div><dt>Cierre</dt><dd>{route.endingPoint}</dd></div></dl></div>
+        <div class="info-card"><h2>Precios</h2><dl><div><dt>Individual</dt><dd>{route.priceIndividual}</dd></div><div><dt>Grupo privado</dt><dd>{route.priceGroup}</dd></div></dl><p class="pending-note">No se cobrará ningún importe al enviar una solicitud.</p></div>
+      </aside>
+    </div>
+  </article>
+</BaseLayout>
