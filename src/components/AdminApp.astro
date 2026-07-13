@@ -1,7 +1,8 @@
 ---
 import { supabaseConfigured } from '../lib/supabase';
+const base = import.meta.env.BASE_URL;
 ---
-<section class="admin-shell" data-admin-app data-configured={String(supabaseConfigured)}>
+<section class="admin-shell" data-admin-app data-configured={String(supabaseConfigured)} data-base={base}>
   <aside class="admin-sidebar" hidden data-admin-sidebar>
     <div class="admin-brand"><span>B</span><strong>Rutas B</strong></div>
     <nav aria-label="Administración">
@@ -25,6 +26,15 @@ import { supabaseConfigured } from '../lib/supabase';
         <label class="field"><span>Contraseña</span><input name="password" type="password" autocomplete="current-password" required disabled={!supabaseConfigured} /></label>
         <p class="admin-error" data-admin-error role="alert"></p>
         <button class="button primary" type="submit" disabled={!supabaseConfigured}>Entrar</button>
+        <button class="admin-recovery-link" type="button" data-show-recovery disabled={!supabaseConfigured}>¿Olvidaste tu contraseña?</button>
+      </form>
+      <form data-recovery-form hidden>
+        <p>Escribe tu correo de administración. Recibirás un enlace seguro para crear una contraseña nueva.</p>
+        <label class="field"><span>Correo de administración</span><input name="email" type="email" autocomplete="email" required /></label>
+        <p class="admin-error" data-recovery-error role="alert"></p>
+        <p class="admin-success" data-recovery-message role="status"></p>
+        <button class="button primary" type="submit">Enviar enlace de recuperación</button>
+        <button class="admin-recovery-link" type="button" data-cancel-recovery>Volver al acceso</button>
       </form>
       <div class="admin-modules"><strong>Módulos independientes</strong><span>Resumen</span><span>Rutas</span><span>Disponibilidad</span><span>Reservas</span><span>Mensajes</span><span>Reseñas</span></div>
     </div>

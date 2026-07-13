@@ -1,0 +1,28 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+const base = import.meta.env.BASE_URL;
+---
+<BaseLayout title="Restablecer contraseña" noindex={true}>
+  <section class="admin-reset section" data-password-reset>
+    <div class="admin-card">
+      <div class="admin-lock" aria-hidden="true">B</div>
+      <p class="kicker dark">Zona privada</p>
+      <h1>Nueva contraseña</h1>
+      <p data-reset-intro>Estamos validando tu enlace seguro.</p>
+      <form data-reset-form hidden>
+        <label class="field"><span>Nueva contraseña</span><input name="password" type="password" minlength="12" autocomplete="new-password" required /></label>
+        <label class="field"><span>Repite la contraseña</span><input name="confirmation" type="password" minlength="12" autocomplete="new-password" required /></label>
+        <small>Utiliza al menos 12 caracteres y no reutilices una contraseña de otro servicio.</small>
+        <p class="admin-error" data-reset-error role="alert"></p>
+        <button class="button primary" type="submit">Guardar nueva contraseña</button>
+      </form>
+      <div class="admin-success" data-reset-success hidden>
+        <strong>Contraseña actualizada.</strong>
+        <p>Ya puedes volver al acceso privado.</p>
+        <a class="button primary" href={`${base}admin/`}>Ir al acceso</a>
+      </div>
+      <p class="admin-error" data-reset-link-error role="alert"></p>
+    </div>
+  </section>
+  <script src="../../scripts/password-reset.ts"></script>
+</BaseLayout>

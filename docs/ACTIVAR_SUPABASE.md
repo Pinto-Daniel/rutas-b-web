@@ -40,3 +40,13 @@ Nunca agregar la clave `service_role` ni una clave secreta al repositorio.
 ## 5. Copias de seguridad
 
 En la etapa gratuita se debe realizar una exportación periódica de la base. Las imágenes requieren una copia separada.
+
+## Recuperación de contraseña del administrador
+
+En **Authentication → URL Configuration** de Supabase, configura:
+
+- Site URL: `https://pinto-daniel.github.io/rutas-b-web/`
+- Redirect URL pública: `https://pinto-daniel.github.io/rutas-b-web/admin/restablecer/`
+- Redirect URL local: `http://127.0.0.1:4321/admin/restablecer/`
+
+La recuperación se inicia desde **¿Olvidaste tu contraseña?** en `/admin/`. El enlace enviado por Supabase abre la pantalla para crear una contraseña nueva.
