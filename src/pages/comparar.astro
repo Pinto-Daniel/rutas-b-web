@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { publishedRoutes } from '../data/routes';
+import { getPublicRoutes } from '../lib/public-routes';
+const publishedRoutes = await getPublicRoutes();
 const base = import.meta.env.BASE_URL;
 ---
 <BaseLayout title="Comparar rutas" description="Compara duración, zona, formato e idiomas de las rutas de Rutas B.">

@@ -1,7 +1,8 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import { publishedRoutes, type TourRoute } from '../../data/routes';
-export function getStaticPaths() { return publishedRoutes.map((route) => ({ params: { slug: route.slug }, props: { route } })); }
+import type { TourRoute } from '../../data/routes';
+import { getPublicRoutes } from '../../lib/public-routes';
+export async function getStaticPaths() { const publishedRoutes = await getPublicRoutes(); return publishedRoutes.map((route) => ({ params: { slug: route.slug }, props: { route } })); }
 interface Props { route: TourRoute; }
 const { route } = Astro.props;
 const base = import.meta.env.BASE_URL;

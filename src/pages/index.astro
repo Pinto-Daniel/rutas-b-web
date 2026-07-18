@@ -2,7 +2,8 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import RouteCard from '../components/RouteCard.astro';
 import ModuleShell from '../components/ModuleShell.astro';
-import { publishedRoutes } from '../data/routes';
+import { getPublicRoutes } from '../lib/public-routes';
+const publishedRoutes = await getPublicRoutes();
 import { moduleEnabled } from '../config/site';
 const base = import.meta.env.BASE_URL;
 ---

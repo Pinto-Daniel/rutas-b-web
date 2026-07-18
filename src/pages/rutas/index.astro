@@ -1,7 +1,8 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import RouteCard from '../../components/RouteCard.astro';
-import { publishedRoutes } from '../../data/routes';
+import { getPublicRoutes } from '../../lib/public-routes';
+const publishedRoutes = await getPublicRoutes();
 ---
 <BaseLayout title="Rutas" description="Explora las rutas culturales de Rutas B de Barcelona.">
   <header class="page-hero compact"><div><p class="kicker">Catálogo inicial</p><h1>Encuentra tu ruta</h1><p>Tres formas distintas de leer Barcelona. Los datos pendientes están señalados con transparencia.</p></div></header>
