@@ -18,3 +18,5 @@
 @media(max-width:800px){.admin-sidebar{position:static;width:100%;padding:14px}.admin-brand{margin-bottom:12px}.admin-sidebar nav{display:flex;overflow:auto}.admin-sidebar nav button{white-space:nowrap}.admin-signout{position:static}.admin-main{margin-left:0}.admin-topbar,.admin-content{padding:20px 14px}.metric-grid{grid-template-columns:1fr 1fr}.admin-panel{padding:18px}}
 
 .admin-recovery-link{border:0;background:transparent;color:var(--forest);font-weight:700;text-decoration:underline;padding:8px}.admin-recovery-link:disabled{opacity:.45}.admin-success{background:#dcecdf;border-left:4px solid var(--forest);padding:14px;color:var(--forest)}.admin-success p:last-child{margin-bottom:0}.admin-reset{min-height:75vh;display:grid;place-items:center}.admin-reset .admin-card form{display:grid;gap:18px;margin-top:30px}.admin-reset .admin-card>.admin-error{margin-top:22px}
+
+.guide-photo{margin:0;overflow:hidden;background:#c8cec8}.guide-photo img{width:100%;height:auto;aspect-ratio:2/3;object-fit:cover}
