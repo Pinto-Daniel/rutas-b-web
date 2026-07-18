@@ -1,19 +1,8 @@
 import { supabase, supabaseConfigured } from './supabase';
-
-export async function signInAdmin(email: string, password: string) {
-  if (!supabaseConfigured || !supabase) throw new Error('Supabase no está configurado.');
-  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-  if (error) throw error;
-  return data;
-}
-
-export async function getAdminDashboard() {
-  if (!supabase) throw new Error('Supabase no está configurado.');
-  const [{ data: profile }, { data: bookings, error }] = await Promise.all([
-    supabase.from('admin_profiles').select('display_name,active').single(),
-    supabase.from('bookings').select('id,public_reference,preferred_date,participant_count,status,created_at,customers(full_name,email),routes(title)').order('created_at',{ascending:false}).limit(25)
-  ]);
-  if (error) throw error;
-  if (!profile?.active) throw new Error('La cuenta no tiene acceso administrativo activo.');
-  return { profile, bookings: bookings ?? [] };
-}
+export async function signInAdmin(email: string,password: string){if(!supabaseConfigured||!supabase)throw new Error('Supabase no está configurado.');const {data,error}=await supabase.auth.signInWithPassword({email,password});if(error)throw error;return data;}
+export async function getAdminDashboard(){if(!supabase)throw new Error('Supabase no está configurado.');const [{data:profile},{data:bookings,error}]=await Promise.all([supabase.from('admin_profiles').select('display_name,active').single(),supabase.from('bookings').select('id,public_reference,preferred_date,participant_count,status,created_at,customers(full_name,email),routes(title)').order('created_at',{ascending:false}).limit(25)]);if(error)throw error;if(!profile?.active)throw new Error('La cuenta no tiene acceso administrativo activo.');return {profile,bookings:bookings??[]};}
+export const bookingStatuses=['received','reviewing','confirmed','cancelled','completed'] as const; export type BookingStatus=typeof bookingStatuses[number]; export interface BookingFilters{page?:number;pageSize?:number;query?:string;routeId?:string;date?:string;status?:BookingStatus|'';}
+export async function getBookingRoutes(){if(!supabase)throw new Error('Supabase no está configurado.');const {data,error}=await supabase.from('routes').select('id,title').order('title');if(error)throw error;return data??[];}
+export async function getBookings(f:BookingFilters={}){if(!supabase)throw new Error('Supabase no está configurado.');const page=Math.max(f.page??1,1),pageSize=f.pageSize??20;let q=supabase.from('bookings').select('id,public_reference,preferred_date,preferred_time,language,participant_count,modality,special_requests,internal_notes,status,created_at,updated_at,customers(full_name,email,phone),routes(id,title)',{count:'exact'}).order('created_at',{ascending:false});if(f.routeId)q=q.eq('route_id',f.routeId);if(f.date)q=q.eq('preferred_date',f.date);if(f.status)q=q.eq('status',f.status);if(f.query?.trim()){const s=f.query.trim().replace(/[,().]/g,' ');q=q.or(`public_reference.ilike.%${s}%,customers.full_name.ilike.%${s}%,customers.email.ilike.%${s}%`);}const {data,error,count}=await q.range((page-1)*pageSize,page*pageSize-1);if(error)throw error;return {bookings:data??[],total:count??0,page,pageSize};}
+export async function getBookingHistory(id:string){if(!supabase)throw new Error('Supabase no está configurado.');const {data,error}=await supabase.from('audit_log').select('id,action,details,created_at').eq('entity_type','booking').eq('entity_id',id).order('created_at',{ascending:false});if(error)throw error;return data??[];}
+export async function manageBooking(id:string,status:BookingStatus,notes:string){if(!supabase)throw new Error('Supabase no está configurado.');const {data,error}=await supabase.rpc('manage_booking',{p_booking_id:id,p_status:status,p_internal_notes:notes});if(error)throw error;return data;}
