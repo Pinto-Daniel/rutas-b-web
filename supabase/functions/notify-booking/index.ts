@@ -12,11 +12,8 @@ const json = (body: Record<string, unknown>, status = 200) => new Response(
 );
 
 const escapeHtml = (value: unknown) => String(value ?? '')
-  .replaceAll('&', '&amp;')
-  .replaceAll('<', '&lt;')
-  .replaceAll('>', '&gt;')
-  .replaceAll('"', '&quot;')
-  .replaceAll("'", '&#039;');
+  .replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;')
+  .replaceAll('"', '&quot;').replaceAll("'", '&#039;');
 
 serve(async (request) => {
   if (request.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
@@ -54,7 +51,7 @@ serve(async (request) => {
     const from = Deno.env.get('BOOKING_NOTIFICATION_FROM') || 'Rutas B <onboarding@resend.dev>';
     if (resendKey && recipient) {
       const html = `
-        <h1>Nueva solicitud de ruta</h1>
+        <h1>Nueva reserva de ruta</h1>
         <p><strong>Referencia:</strong> ${escapeHtml(booking.reference)}</p>
         <p><strong>Ruta:</strong> ${escapeHtml(booking.route_title)}</p>
         <p><strong>Fecha:</strong> ${escapeHtml(booking.preferred_date)}</p>
@@ -72,8 +69,7 @@ serve(async (request) => {
         method: 'POST',
         headers: { Authorization: `Bearer ${resendKey}`, 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          from,
-          to: [recipient],
+          from, to: [recipient],
           subject: `Nueva reserva ${reference} · ${booking.route_title}`,
           html,
         }),
@@ -83,10 +79,13 @@ serve(async (request) => {
   }
 
   let customerSent = !booking.customer_notification_pending;
+  let customerFailure = '';
   if (booking.customer_notification_pending) {
     const webhookUrl = Deno.env.get('CUSTOMER_EMAIL_WEBHOOK_URL');
     const webhookSecret = Deno.env.get('CUSTOMER_EMAIL_WEBHOOK_SECRET');
-    if (webhookUrl && webhookSecret) {
+    if (!webhookUrl || !webhookSecret) {
+      customerFailure = 'customer_webhook_not_configured';
+    } else {
       try {
         const response = await fetch(webhookUrl, {
           method: 'POST',
@@ -104,10 +103,17 @@ serve(async (request) => {
             transport: 'Metro Sagrada Família (L2 y L5)',
           }),
         });
-        const result = await response.json().catch(() => null);
+        const responseText = await response.text();
+        let result = null;
+        try { result = JSON.parse(responseText); } catch { /* diagnostic below */ }
         customerSent = response.ok && result?.ok === true;
-      } catch {
-        customerSent = false;
+        if (!customerSent) {
+          customerFailure = result?.error
+            ? `apps_script_${String(result.error).slice(0, 80)}`
+            : `apps_script_http_${response.status}_${response.headers.get('content-type') || 'unknown'}`;
+        }
+      } catch (error) {
+        customerFailure = `apps_script_fetch_${String(error).slice(0, 120)}`;
       }
     }
   }
@@ -118,6 +124,11 @@ serve(async (request) => {
     p_customer_sent: customerSent,
   });
 
-  if (!adminSent || !customerSent) return json({ error: 'notification_delivery_failed' }, 502);
+  if (!adminSent || !customerSent) return json({
+    error: 'notification_delivery_failed',
+    admin_sent: adminSent,
+    customer_sent: customerSent,
+    customer_failure: customerFailure || undefined,
+  }, 502);
   return json({ ok: true, admin_sent: adminSent, customer_sent: customerSent });
 });
