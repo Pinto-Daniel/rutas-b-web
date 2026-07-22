@@ -15,10 +15,12 @@ const base = import.meta.env.BASE_URL;
       add('Punto de encuentro: frente al restaurante KFC — Gaudí','confirmation-highlight');
       add('Dirección: Avinguda de Gaudí, 2, 08025 Barcelona');
       add('Transporte público: Metro Sagrada Família (L2 y L5)');
+      if(data.emailSent===false){add('La reserva quedó registrada, pero el correo no pudo enviarse. Contáctanos indicando tu referencia.','confirmation-email-warning');}
       if(data.mode==='demo'){document.querySelector('[data-confirmation-mode]').textContent='Modo demostración'; document.querySelector('[data-confirmation-copy]').textContent='El formulario funciona, pero esta reserva no fue enviada porque Supabase todavía no está conectado.';}
     }
   </script>
   <style is:global>
+    .confirmation-data .confirmation-email-warning{color:#9b2c1f;font-weight:700;margin-top:1rem}
     .confirmation-data .confirmation-highlight{font-family:var(--serif);font-size:1.15rem;font-weight:700;color:var(--forest);margin-top:.35rem}
   </style>
 </BaseLayout>

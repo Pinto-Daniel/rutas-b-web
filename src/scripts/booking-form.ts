@@ -23,6 +23,7 @@ if (form) {
     if (slots.includes(previous)) timeSelect.value = previous;
   };
   form.elements.date.addEventListener('change', syncTimeSlots);
+  form.elements.date.addEventListener('click', () => { try { form.elements.date.showPicker?.(); } catch {} });
   syncTimeSlots();
 
   form.addEventListener('submit', async (event) => {
@@ -33,11 +34,11 @@ if (form) {
     const button = form.querySelector('[type=submit]'); const message = form.querySelector('[data-form-message]');
     button.disabled = true; button.textContent = 'Reservando…'; message.hidden = true;
     try {
-      const e=form.elements; const result=await submitBooking({route:e.route.value,date:e.date.value,time:e.time.value,language:e.language.value,people:Number(e.people.value),modality:e.modality.value,name:e.name.value.trim(),email:e.email.value.trim(),phone:e.phone.value.trim(),notes:e.notes.value.trim(),website:e.website.value});
-      if (result.mode === 'connected' && !result.duplicate) await notifyBooking(result.reference);
+      const e=form.elements; const result=await submitBooking({route:e.route.value,date:e.date.value,time:e.time.value,language:e.language.value,people:Number(e.people.value),modality:e.partnerBooking.checked?'partner':'private',name:e.name.value.trim(),email:e.email.value.trim(),phone:e.phone.value.trim(),notes:e.notes.value.trim(),website:e.website.value});
+      const emailSent = result.mode === 'connected' ? await notifyBooking(result.reference) : false;
       const routeTitle=e.route.options[e.route.selectedIndex]?.textContent||e.route.value;
       const timeLabel=e.time.options[e.time.selectedIndex]?.textContent||e.time.value;
-      sessionStorage.setItem('rutasb-last-request',JSON.stringify({route:e.route.value,routeTitle,name:e.name.value,date:e.date.value,time:e.time.value,timeLabel,reference:result.reference,mode:result.mode,duplicate:result.duplicate})); location.href=`${base}confirmacion/`;
+      sessionStorage.setItem('rutasb-last-request',JSON.stringify({route:e.route.value,routeTitle,name:e.name.value,date:e.date.value,time:e.time.value,timeLabel,reference:result.reference,mode:result.mode,duplicate:result.duplicate,emailSent})); location.href=`${base}confirmacion/`;
     } catch { message.textContent='No pudimos registrar la reserva. Inténtalo nuevamente.'; message.hidden=false; button.disabled=false; button.textContent='Reservar ruta'; }
   });
 }

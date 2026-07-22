@@ -16,7 +16,7 @@ const base = import.meta.env.BASE_URL;
         <label class="field"><span>Hora</span><select name="time" required disabled><option value="">Selecciona primero una fecha</option></select><small data-time-help>De lunes a viernes: 18:00 y 22:00. Fines de semana: 10:00, 12:00, 18:00 y 22:00.</small><small data-error-for="time"></small></label>
         <label class="field"><span>Idioma</span><select name="language" required><option value="">Selecciona</option><option value="es">Español</option><option value="en">English</option></select><small data-error-for="language"></small></label>
         <label class="field"><span>Número de personas</span><input name="people" type="number" min="1" max="50" inputmode="numeric" required /><small data-error-for="people"></small></label>
-        <label class="field full"><span>Modalidad</span><select name="modality" required><option value="">Selecciona</option><option value="shared">Individual / compartida, si está disponible</option><option value="private">Grupo privado</option><option value="partner">Hotel, agencia o partner</option></select><small data-error-for="modality"></small></label>
+        <label class="consent partner-check full"><input name="partnerBooking" type="checkbox" /><span>Esta reserva corresponde también a un hotel, agencia o partner.</span></label>
       </div></fieldset>
       <fieldset><legend>Datos de contacto</legend><div class="form-grid">
         <label class="field"><span>Nombre y apellido</span><input name="name" autocomplete="name" required /><small data-error-for="name"></small></label>
@@ -31,4 +31,8 @@ const base = import.meta.env.BASE_URL;
     </form>
   </section>
   <script src="../scripts/booking-form.ts"></script>
+  <style is:global>
+    .booking-form input[type="date"]{cursor:pointer}
+    .partner-check{grid-column:1/-1}
+  </style>
 </BaseLayout>

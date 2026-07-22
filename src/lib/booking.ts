@@ -16,13 +16,12 @@ export async function submitBooking(payload: BookingRequest) {
 }
 
 export async function notifyBooking(reference: string) {
-  if (!supabaseConfigured || !supabase) return;
-  let { error } = await supabase.functions.invoke('notify-booking', {
-    body: { reference },
-  });
-  if (error) {
-    await new Promise((resolve) => setTimeout(resolve, 1200));
-    ({ error } = await supabase.functions.invoke('notify-booking', { body: { reference } }));
+  if (!supabaseConfigured || !supabase) return false;
+  for (let attempt = 0; attempt < 3; attempt += 1) {
+    const { error } = await supabase.functions.invoke('notify-booking', { body: { reference } });
+    if (!error) return true;
+    if (attempt < 2) await new Promise((resolve) => setTimeout(resolve, 1000 * (attempt + 1)));
   }
-  if (error) console.warn('Booking notification could not be requested.');
+  console.warn('Booking notification could not be requested.');
+  return false;
 }

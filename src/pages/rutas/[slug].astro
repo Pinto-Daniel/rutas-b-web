@@ -21,7 +21,7 @@ const pending = route.status !== 'available';
     </header>
     <div class="route-booking-bar">
       <div><span>Duración</span><strong>{route.duration}</strong></div><div><span>Idiomas ofrecidos</span><strong>{route.languages.join(' · ')}</strong></div><div><span>Precio</span><strong>{route.priceIndividual}</strong></div>
-      <a class="button primary" href={`${base}reservar/?ruta=${route.slug}`}>{pending ? 'Consultar esta ruta' : 'Solicitar esta ruta'}</a>
+      <a class="button primary" href={`${base}reservar/?ruta=${route.slug}`}>{pending ? 'Consultar esta ruta' : 'Reservar esta ruta'}</a>
     </div>
     <div class="detail-layout section">
       <div class="detail-main">
@@ -32,7 +32,7 @@ const pending = route.status !== 'available';
       </div>
       <aside class="detail-sidebar">
         <div class="info-card"><h2>Información práctica</h2><dl><div><dt>Zona</dt><dd>{route.area}</dd></div><div><dt>Formato</dt><dd>{route.format}</dd></div><div><dt>Inicio</dt><dd>{route.startingPoint}</dd></div><div><dt>Cierre</dt><dd>{route.endingPoint}</dd></div></dl></div>
-        <div class="info-card"><h2>Precios</h2><dl><div><dt>Individual</dt><dd>{route.priceIndividual}</dd></div><div><dt>Grupo privado</dt><dd>{route.priceGroup}</dd></div></dl><p class="pending-note">No se cobrará ningún importe al enviar una solicitud.</p></div>
+        <div class="info-card"><h2>Precios</h2><dl><div><dt>Individual</dt><dd>{route.priceIndividual}</dd></div><div><dt>Grupo privado</dt><dd>{route.priceGroup}</dd></div></dl><p class="pending-note">No se cobrará ningún importe al registrar la reserva.</p></div>
       </aside>
     </div>
   </article>
