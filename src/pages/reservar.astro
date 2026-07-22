@@ -1,7 +1,7 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { getPublicRoutes } from '../lib/public-routes';
-const publishedRoutes = await getPublicRoutes();
+const bookableRoutes = (await getPublicRoutes()).filter((route) => route.status === 'available');
 const base = import.meta.env.BASE_URL;
 ---
 <BaseLayout title="Solicitar una ruta" description="Envía una solicitud de ruta sin pago y recibe confirmación de disponibilidad.">
@@ -11,7 +11,7 @@ const base = import.meta.env.BASE_URL;
       <div class="form-progress" aria-label="Progreso"><span class="active">1. Ruta</span><span>2. Contacto</span><span>3. Revisión</span></div>
       <div class="form-message" data-form-message role="alert" hidden></div>
       <fieldset><legend>Elige la experiencia</legend><div class="form-grid">
-        <label class="field full"><span>Ruta</span><select name="route" required><option value="">Selecciona una ruta</option>{publishedRoutes.map((r) => <option value={r.slug}>{r.title} · {r.statusLabel}</option>)}</select><small data-error-for="route"></small></label>
+        <label class="field full"><span>Ruta</span><select name="route" required><option value="">Selecciona una ruta</option>{bookableRoutes.map((r) => <option value={r.slug}>{r.title}</option>)}</select><small data-error-for="route"></small></label>
         <label class="field"><span>Fecha preferida</span><input name="date" type="date" required /><small data-error-for="date"></small></label>
         <label class="field"><span>Horario preferido</span><select name="time" required><option value="">Selecciona</option><option value="morning">Mañana</option><option value="midday">Mediodía</option><option value="afternoon">Tarde</option><option value="flexible">Flexible</option></select><small data-error-for="time"></small></label>
         <label class="field"><span>Idioma</span><select name="language" required><option value="">Selecciona</option><option value="es">Español</option><option value="en">English</option></select><small data-error-for="language"></small></label>

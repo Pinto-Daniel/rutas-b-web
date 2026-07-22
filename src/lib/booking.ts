@@ -14,3 +14,11 @@ export async function submitBooking(payload: BookingRequest) {
   if (error) throw new Error(error.message);
   return { mode: 'connected' as const, reference: data.reference as string, duplicate: Boolean(data.duplicate) };
 }
+
+export async function notifyBooking(reference: string) {
+  if (!supabaseConfigured || !supabase) return;
+  const { error } = await supabase.functions.invoke('notify-booking', {
+    body: { reference },
+  });
+  if (error) console.warn('Booking notification could not be requested.');
+}

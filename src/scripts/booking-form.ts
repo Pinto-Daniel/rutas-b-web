@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { submitBooking } from '../lib/booking';
+import { notifyBooking, submitBooking } from '../lib/booking';
 const form = document.querySelector('[data-booking-form]');
 if (form) {
   const base = form.dataset.base || '/';
@@ -15,6 +15,7 @@ if (form) {
     button.disabled = true; button.textContent = 'Enviando…'; message.hidden = true;
     try {
       const e=form.elements; const result=await submitBooking({route:e.route.value,date:e.date.value,time:e.time.value,language:e.language.value,people:Number(e.people.value),modality:e.modality.value,name:e.name.value.trim(),email:e.email.value.trim(),phone:e.phone.value.trim(),notes:e.notes.value.trim(),website:e.website.value});
+      if (result.mode === 'connected' && !result.duplicate) await notifyBooking(result.reference);
       const routeTitle=e.route.options[e.route.selectedIndex]?.textContent?.split(' · ')[0]||e.route.value;
       sessionStorage.setItem('rutasb-last-request',JSON.stringify({route:e.route.value,routeTitle,name:e.name.value,date:e.date.value,reference:result.reference,mode:result.mode,duplicate:result.duplicate})); location.href=`${base}confirmacion/`;
     } catch { message.textContent='No pudimos registrar la solicitud. Inténtalo nuevamente.'; message.hidden=false; button.disabled=false; button.textContent='Enviar solicitud'; }
