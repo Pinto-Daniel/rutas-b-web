@@ -3,7 +3,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 const base = import.meta.env.BASE_URL;
 ---
 <BaseLayout title="Reserva registrada" noindex>
-  <section class="confirmation section"><div class="confirmation-card"><span class="confirmation-icon">✓</span><p class="kicker dark" data-confirmation-mode>¡Reserva realizada!</p><h1 data-confirmation-title>Gracias por elegir Rutas B</h1><p data-confirmation-copy>Tu reserva ya está registrada. Si no hay cambios, te la reconfirmaremos 12 horas antes del inicio.</p><div class="confirmation-data" data-confirmation-data></div><a class="button primary" href={base}>Volver a Rutas B</a></div></section>
+  <section class="confirmation section"><div class="confirmation-card"><span class="confirmation-icon">✓</span><p class="kicker dark" data-confirmation-mode>¡Reserva realizada!</p><h1 data-confirmation-title>Gracias por elegir Rutas B</h1><p data-confirmation-copy>Tu reserva está registrada. Guarda estos datos: también los recibirás por correo electrónico.</p><div class="confirmation-data" data-confirmation-data></div><a class="button primary" href={base}>Volver a Rutas B</a></div></section>
   <script is:inline>
     const target = document.querySelector('[data-confirmation-data]'); const raw = sessionStorage.getItem('rutasb-last-request');
     if (target && raw) {
