@@ -17,8 +17,12 @@ export async function submitBooking(payload: BookingRequest) {
 
 export async function notifyBooking(reference: string) {
   if (!supabaseConfigured || !supabase) return;
-  const { error } = await supabase.functions.invoke('notify-booking', {
+  let { error } = await supabase.functions.invoke('notify-booking', {
     body: { reference },
   });
+  if (error) {
+    await new Promise((resolve) => setTimeout(resolve, 1200));
+    ({ error } = await supabase.functions.invoke('notify-booking', { body: { reference } }));
+  }
   if (error) console.warn('Booking notification could not be requested.');
 }

@@ -32,11 +32,6 @@ serve(async (request) => {
   }
   if (!/^[A-F0-9]{10}$/.test(reference)) return json({ error: 'invalid_reference' }, 400);
 
-  const resendKey = Deno.env.get('RESEND_API_KEY');
-  const recipient = Deno.env.get('BOOKING_NOTIFICATION_EMAIL');
-  const from = Deno.env.get('BOOKING_NOTIFICATION_FROM') || 'Rutas B <onboarding@resend.dev>';
-  if (!resendKey || !recipient) return json({ error: 'notification_not_configured' }, 503);
-
   const supabase = createClient(
     Deno.env.get('SUPABASE_URL')!,
     Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!,
@@ -51,38 +46,74 @@ serve(async (request) => {
     shared: 'Individual / compartida', private: 'Grupo privado', partner: 'Hotel, agencia o partner',
     es: 'Español', en: 'English',
   };
-  const html = `
-    <h1>Nueva solicitud de ruta</h1>
-    <p><strong>Referencia:</strong> ${escapeHtml(booking.reference)}</p>
-    <p><strong>Ruta:</strong> ${escapeHtml(booking.route_title)}</p>
-    <p><strong>Fecha:</strong> ${escapeHtml(booking.preferred_date)}</p>
-    <p><strong>Horario:</strong> ${escapeHtml(labels[booking.preferred_time] || booking.preferred_time)}</p>
-    <p><strong>Personas:</strong> ${escapeHtml(booking.participant_count)}</p>
-    <p><strong>Modalidad:</strong> ${escapeHtml(labels[booking.modality] || booking.modality)}</p>
-    <p><strong>Idioma:</strong> ${escapeHtml(labels[booking.language] || booking.language)}</p>
-    <hr>
-    <p><strong>Cliente:</strong> ${escapeHtml(booking.customer_name)}</p>
-    <p><strong>Correo:</strong> ${escapeHtml(booking.customer_email)}</p>
-    <p><strong>Teléfono:</strong> ${escapeHtml(booking.customer_phone || 'No indicado')}</p>
-    <p><strong>Solicitud especial:</strong> ${escapeHtml(booking.special_requests || 'Ninguna')}</p>
-  `;
 
-  const response = await fetch('https://api.resend.com/emails', {
-    method: 'POST',
-    headers: { Authorization: `Bearer ${resendKey}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      from,
-      to: [recipient],
-      subject: `Nueva reserva ${reference} · ${booking.route_title}`,
-      html,
-    }),
-  });
-
-  if (!response.ok) {
-    await supabase.rpc('release_booking_notification', { p_reference: reference });
-    return json({ error: 'email_delivery_failed' }, 502);
+  let adminSent = !booking.admin_notification_pending;
+  if (booking.admin_notification_pending) {
+    const resendKey = Deno.env.get('RESEND_API_KEY');
+    const recipient = Deno.env.get('BOOKING_NOTIFICATION_EMAIL');
+    const from = Deno.env.get('BOOKING_NOTIFICATION_FROM') || 'Rutas B <onboarding@resend.dev>';
+    if (resendKey && recipient) {
+      const html = `
+        <h1>Nueva solicitud de ruta</h1>
+        <p><strong>Referencia:</strong> ${escapeHtml(booking.reference)}</p>
+        <p><strong>Ruta:</strong> ${escapeHtml(booking.route_title)}</p>
+        <p><strong>Fecha:</strong> ${escapeHtml(booking.preferred_date)}</p>
+        <p><strong>Horario:</strong> ${escapeHtml(labels[booking.preferred_time] || booking.preferred_time)}</p>
+        <p><strong>Personas:</strong> ${escapeHtml(booking.participant_count)}</p>
+        <p><strong>Modalidad:</strong> ${escapeHtml(labels[booking.modality] || booking.modality)}</p>
+        <p><strong>Idioma:</strong> ${escapeHtml(labels[booking.language] || booking.language)}</p>
+        <hr>
+        <p><strong>Cliente:</strong> ${escapeHtml(booking.customer_name)}</p>
+        <p><strong>Correo:</strong> ${escapeHtml(booking.customer_email)}</p>
+        <p><strong>Teléfono:</strong> ${escapeHtml(booking.customer_phone || 'No indicado')}</p>
+        <p><strong>Solicitud especial:</strong> ${escapeHtml(booking.special_requests || 'Ninguna')}</p>
+      `;
+      const response = await fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${resendKey}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          from,
+          to: [recipient],
+          subject: `Nueva reserva ${reference} · ${booking.route_title}`,
+          html,
+        }),
+      });
+      adminSent = response.ok;
+    }
   }
 
-  await supabase.rpc('complete_booking_notification', { p_reference: reference });
-  return json({ ok: true });
+  let customerSent = !booking.customer_notification_pending;
+  if (booking.customer_notification_pending) {
+    const webhookUrl = Deno.env.get('CUSTOMER_EMAIL_WEBHOOK_URL');
+    const webhookSecret = Deno.env.get('CUSTOMER_EMAIL_WEBHOOK_SECRET');
+    if (webhookUrl && webhookSecret) {
+      try {
+        const response = await fetch(webhookUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            secret: webhookSecret,
+            to: booking.customer_email,
+            name: booking.customer_name,
+            reference: booking.reference,
+            route: booking.route_title,
+            date: booking.preferred_date,
+          }),
+        });
+        const result = await response.json().catch(() => null);
+        customerSent = response.ok && result?.ok === true;
+      } catch {
+        customerSent = false;
+      }
+    }
+  }
+
+  await supabase.rpc('complete_booking_notification', {
+    p_reference: reference,
+    p_admin_sent: adminSent,
+    p_customer_sent: customerSent,
+  });
+
+  if (!adminSent || !customerSent) return json({ error: 'notification_delivery_failed' }, 502);
+  return json({ ok: true, admin_sent: adminSent, customer_sent: customerSent });
 });
