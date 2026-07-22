@@ -1,7 +1,7 @@
 import { supabase, supabaseConfigured } from './supabase';
 
 export interface BookingRequest {
-  route: string; date: string; time: 'morning'|'midday'|'afternoon'|'flexible';
+  route: string; date: string; time: '10:00'|'12:00'|'18:00'|'22:00';
   language: 'es'|'en'; people: number; modality: 'shared'|'private'|'partner';
   name: string; email: string; phone?: string; notes?: string; website?: string;
 }

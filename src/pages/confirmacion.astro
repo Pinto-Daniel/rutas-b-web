@@ -2,10 +2,23 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 const base = import.meta.env.BASE_URL;
 ---
-<BaseLayout title="Solicitud preparada" noindex>
-  <section class="confirmation section"><div class="confirmation-card"><span class="confirmation-icon">✓</span><p class="kicker dark" data-confirmation-mode>¡Solicitud recibida!</p><h1 data-confirmation-title>Gracias por elegir Rutas B</h1><p data-confirmation-copy>Qué bueno tenerte por aquí. Revisaremos la disponibilidad y te escribiremos lo antes posible. Tu reserva quedará confirmada cuando recibas nuestra respuesta.</p><div class="confirmation-data" data-confirmation-data></div><a class="button primary" href={base}>Volver a Rutas B</a></div></section>
+<BaseLayout title="Reserva registrada" noindex>
+  <section class="confirmation section"><div class="confirmation-card"><span class="confirmation-icon">✓</span><p class="kicker dark" data-confirmation-mode>¡Reserva realizada!</p><h1 data-confirmation-title>Gracias por elegir Rutas B</h1><p data-confirmation-copy>Tu reserva ya está registrada. Si no hay cambios, te la reconfirmaremos 12 horas antes del inicio.</p><div class="confirmation-data" data-confirmation-data></div><a class="button primary" href={base}>Volver a Rutas B</a></div></section>
   <script is:inline>
     const target = document.querySelector('[data-confirmation-data]'); const raw = sessionStorage.getItem('rutasb-last-request');
-    if (target && raw) { const data = JSON.parse(raw); const firstName=String(data.name||'').trim().split(/\s+/)[0]; const heading=document.querySelector('[data-confirmation-title]'); if(heading&&firstName) heading.textContent=`¡Gracias, ${firstName}!`; const titles={'sagrada-familia':'Sagrada Família','barcino':'Barcino','cafeborn':'CafèBorn'}; const routeTitle=data.routeTitle||titles[data.route]||data.route; target.innerHTML = `<strong>Referencia ${data.reference}</strong><span>${data.name}</span><span>Ruta: ${routeTitle}</span><span>Fecha preferida: ${data.date}</span>`; if(data.mode==='demo'){document.querySelector('[data-confirmation-mode]').textContent='Modo demostración'; document.querySelector('[data-confirmation-copy]').textContent='El formulario funciona, pero esta solicitud no fue enviada porque Supabase todavía no está conectado.';} }
+    if (target && raw) {
+      const data = JSON.parse(raw); const firstName=String(data.name||'').trim().split(/\s+/)[0]; const heading=document.querySelector('[data-confirmation-title]'); if(heading&&firstName) heading.textContent=`¡Gracias, ${firstName}!`;
+      const titles={'sagrada-familia':'Sagrada Família','barcino':'Barcino','cafeborn':'CafèBorn'}; const routeTitle=data.routeTitle||titles[data.route]||data.route;
+      const add=(text,className='')=>{const span=document.createElement('span');span.textContent=text;if(className)span.className=className;target.append(span)};
+      const strong=document.createElement('strong');strong.textContent=`Referencia ${data.reference}`;target.append(strong);
+      add(`Ruta: ${routeTitle}`); add(`Fecha: ${data.date}`); add(`Horario elegido: ${data.timeLabel||data.time||'Por confirmar'}`,'confirmation-highlight');
+      add('Punto de encuentro: frente al restaurante KFC — Gaudí','confirmation-highlight');
+      add('Dirección: Avinguda de Gaudí, 2, 08025 Barcelona');
+      add('Transporte público: Metro Sagrada Família (L2 y L5)');
+      if(data.mode==='demo'){document.querySelector('[data-confirmation-mode]').textContent='Modo demostración'; document.querySelector('[data-confirmation-copy]').textContent='El formulario funciona, pero esta reserva no fue enviada porque Supabase todavía no está conectado.';}
+    }
   </script>
+  <style is:global>
+    .confirmation-data .confirmation-highlight{font-family:var(--serif);font-size:1.15rem;font-weight:700;color:var(--forest);margin-top:.35rem}
+  </style>
 </BaseLayout>

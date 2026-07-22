@@ -98,6 +98,10 @@ serve(async (request) => {
             reference: booking.reference,
             route: booking.route_title,
             date: booking.preferred_date,
+            time: labels[booking.preferred_time] || booking.preferred_time,
+            meetingPoint: 'Frente al restaurante KFC — Gaudí',
+            address: 'Avinguda de Gaudí, 2, 08025 Barcelona',
+            transport: 'Metro Sagrada Família (L2 y L5)',
           }),
         });
         const result = await response.json().catch(() => null);
