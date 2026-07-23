@@ -6,8 +6,10 @@ export async function getStaticPaths() { const publishedRoutes = await getPublic
 interface Props { route: TourRoute; }
 const { route } = Astro.props;
 const base = import.meta.env.BASE_URL;
-const image = `${base}${route.image.replace(/^\//, '')}`;
+const image = /^https?:/i.test(route.image) ? route.image : `${base}${route.image.replace(/^\//, '')}`;
 const pending = route.status !== 'available';
+const gallery = route.gallery ?? [];
+const documents = route.documents ?? [];
 ---
 <BaseLayout title={route.title} description={route.promise}>
   <article class="route-detail">
@@ -16,7 +18,7 @@ const pending = route.status !== 'available';
       <div class="route-hero-overlay"></div>
       <div class="route-hero-copy">
         <p class="kicker">{route.eyebrow}</p><h1>{route.title}</h1><p>{route.promise}</p>
-        <span class:list={['status-pill', route.status]}>{route.statusLabel}</span>
+        {route.status !== 'available' && <span class:list={['status-pill', route.status]}>{route.statusLabel}</span>}
       </div>
     </header>
     <div class="route-booking-bar">
@@ -25,7 +27,7 @@ const pending = route.status !== 'available';
     </div>
     <div class="detail-layout section">
       <div class="detail-main">
-        <section><p class="kicker dark">La experiencia</p><h2>Una ruta con una pregunta propia</h2><p class="large-copy">{route.description}</p></section>
+        <section><p class="kicker dark">La experiencia</p><h2>Una ruta con una pregunta propia</h2><p class="large-copy">{route.description}</p></section>{gallery.length > 0 && <section class="route-gallery"><h2>Galería</h2><div>{gallery.map((item) => <figure><img src={item.url} alt={item.altText} loading="lazy" />{item.title && <figcaption>{item.title}</figcaption>}</figure>)}</div></section>}{documents.length > 0 && <section class="route-documents"><h2>Materiales de la ruta</h2><div>{documents.map((item) => <a href={item.url} target="_blank" rel="noopener">{item.kind === 'audio' ? 'Escuchar: ' : 'Abrir: '}{item.title}</a>)}</div></section>}
         <section><h2>El recorrido</h2><ol class="stop-list">{route.stops.map((stop, index) => <li><span>{String(index + 1).padStart(2, '0')}</span><strong>{stop}</strong></li>)}</ol></section>
         <section class="two-columns"><div><h2>Qué incluye</h2><ul class="check-list">{route.includes.map((item) => <li>{item}</li>)}</ul></div><div><h2>Qué no incluye</h2><ul class="plain-list">{route.notIncluded.map((item) => <li>{item}</li>)}</ul></div></section>
         <section><h2>Accesibilidad</h2><p>{route.accessibility}</p></section>

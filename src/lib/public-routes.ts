@@ -9,18 +9,19 @@ export async function getPublicRoutes(): Promise<TourRoute[]> {
   const client = createClient(url, key);
   const { data, error } = await client
     .from('routes')
-    .select('slug,title,short_description,full_description,offered_languages,meeting_point_public,accessibility,includes,excludes,featured,eyebrow,promise,status_label,display_duration,display_format,display_area,display_starting_point,display_ending_point,audience,display_price_individual,display_price_group,primary_image_path,primary_image_alt,route_stops(title,sort_order)')
+    .select('slug,title,short_description,full_description,offered_languages,meeting_point_public,accessibility,includes,excludes,featured,eyebrow,promise,status_label,display_duration,display_format,display_area,display_starting_point,display_ending_point,audience,display_price_individual,display_price_group,primary_image_path,primary_image_alt,route_stops(title,sort_order),route_media(id,kind,role,storage_path,title,alt_text,mime_type,sort_order,status)')
     .eq('status', 'published')
     .order('sort_order');
   if (error || !data?.length) return fallbackRoutes;
 
+  const publicUrl = (path: string) => !path || path.startsWith('/') || /^https?:/i.test(path) ? path : client.storage.from('route-media').getPublicUrl(path).data.publicUrl;
   return data.map((route: any) => ({
     slug: route.slug,
     title: route.title,
     eyebrow: route.eyebrow || '',
     promise: route.promise || route.short_description || '',
     description: route.full_description || '',
-    status: route.status_label === 'Ruta inicial' ? 'available' : 'in-development',
+    status: ['Ruta inicial', 'Disponible'].includes(route.status_label) ? 'available' : 'in-development',
     statusLabel: route.status_label || 'En preparación',
     duration: route.display_duration || 'Pendiente de definición',
     format: route.display_format || 'Pendiente de definición',
@@ -35,8 +36,10 @@ export async function getPublicRoutes(): Promise<TourRoute[]> {
     accessibility: route.accessibility || '',
     priceIndividual: route.display_price_individual || 'Pendiente de definición',
     priceGroup: route.display_price_group || 'Pendiente de definición',
-    image: route.primary_image_path || '',
+    image: publicUrl(route.primary_image_path || ''),
     imageAlt: route.primary_image_alt || route.title,
+    gallery: (route.route_media || []).filter((item: any) => item.kind === 'image' && item.role === 'gallery').sort((a: any,b: any) => a.sort_order-b.sort_order).map((item: any) => ({id:item.id,kind:item.kind,role:item.role,url:publicUrl(item.storage_path),title:item.title||'',altText:item.alt_text||route.title,mimeType:item.mime_type})),
+    documents: (route.route_media || []).filter((item: any) => item.role === 'attachment').sort((a: any,b: any) => a.sort_order-b.sort_order).map((item: any) => ({id:item.id,kind:item.kind,role:item.role,url:publicUrl(item.storage_path),title:item.title||'Documento de la ruta',altText:item.alt_text||'',mimeType:item.mime_type})),
     featured: route.featured,
     published: true,
   }));

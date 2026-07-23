@@ -1,5 +1,15 @@
 export type RouteStatus = 'available' | 'in-development' | 'coming-soon';
 
+export interface RouteMediaAsset {
+  id: string;
+  kind: 'image' | 'document' | 'audio' | 'map';
+  role: 'hero' | 'gallery' | 'attachment';
+  url: string;
+  title: string;
+  altText: string;
+  mimeType: string;
+}
+
 export interface TourRoute {
   slug: string;
   title: string;
@@ -23,6 +33,8 @@ export interface TourRoute {
   priceGroup: string;
   image: string;
   imageAlt: string;
+  gallery?: RouteMediaAsset[];
+  documents?: RouteMediaAsset[];
   featured: boolean;
   published: boolean;
 }
@@ -35,8 +47,8 @@ export const routes: TourRoute[] = [
     promise: 'Una ruta exterior para comprender la obra más famosa de Barcelona sin reducirla a una postal.',
     description: 'Rodeamos la basílica para descubrir cómo Gaudí, el Eixample, la fe, el oficio y más de un siglo de historia siguen conversando en una obra todavía viva.',
     status: 'available',
-    statusLabel: 'Ruta inicial',
-    duration: '1 h 30 min–1 h 40 min',
+    statusLabel: 'Disponible',
+    duration: '75 minutos aprox.',
     format: 'Exterior · caminata corta · 4 paradas',
     area: 'Sagrada Família',
     languages: ['Español', 'English'],

@@ -8,7 +8,7 @@ const image = /^https?:/i.test(route.image) ? route.image : `${base}${route.imag
 <article class="route-card">
   <a class="route-card-image" href={`${base}rutas/${route.slug}/`} aria-label={`Ver ${route.title}`}>
     <img src={image} alt={route.imageAlt} loading="lazy" />
-    <span class:list={['status-pill', route.status]}>{route.statusLabel}</span>
+    {route.status !== 'available' && <span class:list={['status-pill', route.status]}>{route.statusLabel}</span>}
   </a>
   <div class="route-card-body">
     <p class="eyebrow">{route.eyebrow}</p>
